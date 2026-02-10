@@ -3,8 +3,8 @@ import { baseRequestClient, requestClient } from '#/api/request';
 export namespace AuthApi {
   /** 登录接口参数 */
   export interface LoginParams {
-    password?: string;
-    username?: string;
+    phone: string;
+    password: string;
   }
 
   /** 登录接口返回值 */
@@ -22,12 +22,8 @@ export namespace AuthApi {
  * 登录
  */
 export async function loginApi(data: AuthApi.LoginParams) {
-  // 模拟登录，返回固定 token
-  return Promise.resolve({
-    data: {
-      accessToken: 'mock-token-' + Date.now(),
-    },
-  });
+  // 调用后端真实登录接口
+  return requestClient.post<AuthApi.LoginResult>('/auth/login/h5', data);
 }
 
 /**
