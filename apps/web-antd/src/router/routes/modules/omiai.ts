@@ -164,6 +164,24 @@ const routes: RouteRecordRaw[] = [
         path: '/banner/list',
         component: () => import('#/views/banner/list.vue'),
       },
+      {
+        meta: {
+          title: '新增Banner',
+          hideInMenu: true,
+        },
+        name: 'BannerCreate',
+        path: '/banner/create',
+        component: () => import('#/views/banner/edit.vue'),
+      },
+      {
+        meta: {
+          title: '编辑Banner',
+          hideInMenu: true,
+        },
+        name: 'BannerEdit',
+        path: '/banner/edit/:id',
+        component: () => import('#/views/banner/edit.vue'),
+      },
     ],
   },
 ];

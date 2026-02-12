@@ -29,12 +29,10 @@ async function fetchList() {
   loading.value = true;
   try {
     const res = await getMatchList(queryParams.value);
-    if (res.data.code === 0) {
-      matchList.value = res.data.data.list;
-      total.value = res.data.data.total;
-    } else {
-      message.error(res.data.message || '获取列表失败');
-    }
+    // 由于拦截器配置，res 已经是 data 字段的内容
+    const list = Array.isArray(res) ? res : [];
+    matchList.value = list;
+    total.value = list.length;
   } catch (error) {
     message.error('获取列表失败');
   } finally {

@@ -28,11 +28,8 @@ async function fetchComparison() {
   loading.value = true;
   try {
     const res = await compareClients(clientId, candidateId);
-    if (res.data.code === 0) {
-      comparison.value = res.data.data;
-    } else {
-      message.error(res.data.message || '获取对比数据失败');
-    }
+    // 由于拦截器配置，res 已经是 data 字段的内容
+    comparison.value = res;
   } catch (error) {
     message.error('获取对比数据失败');
   } finally {
@@ -44,16 +41,12 @@ async function fetchComparison() {
 async function handleConfirm() {
   confirming.value = true;
   try {
-    const res = await confirmMatch({
+    await confirmMatch({
       client_id: clientId,
       candidate_id: candidateId,
     });
-    if (res.data.code === 0) {
-      message.success('匹配成功');
-      router.push('/couple/list');
-    } else {
-      message.error(res.data.message || '匹配失败');
-    }
+    message.success('匹配成功');
+    router.push('/couple/list');
   } catch (error) {
     message.error('匹配失败');
   } finally {

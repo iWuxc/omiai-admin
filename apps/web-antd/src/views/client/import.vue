@@ -54,13 +54,10 @@ async function handleUpload(file: File) {
   analyzing.value = true;
   try {
     const res = await analyzeImportFile(file);
-    if (res.data.code === 0) {
-      analysisResult.value = res.data.data;
-      currentStep.value = 1;
-      message.success('文件分析完成');
-    } else {
-      message.error(res.data.message || '分析失败');
-    }
+    // 由于拦截器配置，res 已经是 data 字段的内容
+    analysisResult.value = res;
+    currentStep.value = 1;
+    message.success('文件分析完成');
   } catch (error) {
     message.error('文件分析失败');
   } finally {
@@ -75,15 +72,11 @@ async function handleImport() {
   
   importing.value = true;
   try {
-    const res = await batchImportClients({
+    await batchImportClients({
       clients: analysisResult.value.preview,
     });
-    if (res.data.code === 0) {
-      currentStep.value = 2;
-      message.success('导入成功');
-    } else {
-      message.error(res.data.message || '导入失败');
-    }
+    currentStep.value = 2;
+    message.success('导入成功');
   } catch (error) {
     message.error('导入失败');
   } finally {

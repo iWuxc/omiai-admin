@@ -43,9 +43,8 @@ const typeDistribution = ref([
 async function fetchStats() {
   try {
     const res = await getReminderStats();
-    if (res.data.code === 0) {
-      stats.value = res.data.data;
-    }
+    // 由于拦截器配置，res 已经是 data 字段的内容
+    stats.value = res;
   } catch (error) {
     console.error('获取统计失败', error);
   }

@@ -1,5 +1,3 @@
-import { baseRequestClient, requestClient } from '#/api/request';
-
 export namespace AuthApi {
   /** 登录接口参数 */
   export interface LoginParams {
@@ -10,6 +8,12 @@ export namespace AuthApi {
   /** 登录接口返回值 */
   export interface LoginResult {
     accessToken: string;
+    user: {
+      id: number;
+      nickname: string;
+      avatar: string;
+      role: string;
+    };
   }
 
   export interface RefreshTokenResult {
@@ -22,7 +26,6 @@ export namespace AuthApi {
  * 登录
  */
 export async function loginApi(data: AuthApi.LoginParams) {
-  // 调用后端真实登录接口
   return requestClient.post<AuthApi.LoginResult>('/auth/login/h5', data);
 }
 

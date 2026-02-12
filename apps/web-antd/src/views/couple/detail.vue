@@ -29,9 +29,9 @@ async function fetchDetail() {
   loading.value = true;
   try {
     const res = await getMatchList({ page: 1, page_size: 1 });
-    if (res.data.code === 0) {
-      matchRecord.value = res.data.data.list.find((item: MatchRecord) => item.id === recordId) || null;
-    }
+    // 由于拦截器配置，res 已经是 data 字段的内容
+    const list = Array.isArray(res) ? res : [];
+    matchRecord.value = list.find((item: MatchRecord) => item.id === recordId) || null;
   } catch (error) {
     message.error('获取详情失败');
   } finally {
@@ -43,9 +43,8 @@ async function fetchDetail() {
 async function fetchStatusHistory() {
   try {
     const res = await getStatusHistory(recordId);
-    if (res.data.code === 0) {
-      statusHistory.value = res.data.data;
-    }
+    // 由于拦截器配置，res 已经是 data 字段的内容
+    statusHistory.value = Array.isArray(res) ? res : [];
   } catch (error) {
     console.error('获取状态历史失败', error);
   }

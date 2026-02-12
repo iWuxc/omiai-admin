@@ -52,14 +52,21 @@ const queryParams = ref<ClientListParams>({
 async function fetchList() {
   loading.value = true;
   try {
+    // 由于 requestClient 配置了 responseReturn: 'data'，res 直接就是后端返回的 data 字段内容
     const res = await getClientList(queryParams.value);
-    if (res.data.code === 0) {
-      clientList.value = res.data.data.list;
-      total.value = res.data.data.total;
+    console.log('getClientList 响应:', res);
+
+    // 后端返回: {code: 0, msg: "ok", data: {list: [...], total: 10}}
+    // requestClient 提取后: res = {list: [...], total: 10}
+
+    if (res.list) {
+      clientList.value = res.list;
+      total.value = res.total || 0;
     } else {
-      message.error(res.data.message || '获取列表失败');
+      message.error('获取列表失败：返回数据格式错误');
     }
   } catch (error) {
+    console.error('获取列表失败:', error);
     message.error('获取列表失败');
   } finally {
     loading.value = false;
@@ -111,14 +118,12 @@ async function handleDelete(record: Client) {
     cancelText: '取消',
     async onOk() {
       try {
-        const res = await deleteClient(record.id);
-        if (res.data.code === 0) {
-          message.success('删除成功');
-          fetchList();
-        } else {
-          message.error(res.data.message || '删除失败');
-        }
+        // 由于 requestClient 配置了 responseReturn: 'data'，直接就是成功响应
+        await deleteClient(record.id);
+        message.success('删除成功');
+        fetchList();
       } catch (error) {
+        console.error('删除失败:', error);
         message.error('删除失败');
       }
     },

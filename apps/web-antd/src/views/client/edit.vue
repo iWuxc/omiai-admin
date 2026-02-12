@@ -2,6 +2,8 @@
 import { onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
+import dayjs from 'dayjs';
+
 import {
   ArrowLeftOutlined,
   SaveOutlined,
@@ -85,34 +87,33 @@ async function fetchDetail() {
   loading.value = true;
   try {
     const res = await getClientDetail(clientId.value);
-    if (res.data.code === 0) {
-      const data = res.data.data;
-      Object.assign(formData, {
-        id: data.id,
-        name: data.name,
-        gender: data.gender,
-        phone: data.phone,
-        birthday: data.birthday,
-        avatar: data.avatar,
-        age: data.age,
-        height: data.height,
-        weight: data.weight,
-        education: data.education,
-        marital_status: data.marital_status,
-        address: data.address,
-        family_description: data.family_description,
-        income: data.income,
-        profession: data.profession,
-        work_city: data.work_city,
-        house_status: data.house_status,
-        car_status: data.car_status,
-        tags: data.tags || [],
-        partner_requirements: data.partner_requirements || {},
-        parents_profession: data.parents_profession,
-        remark: data.remark,
-        photos: data.photos || [],
-      });
-    }
+    // 由于拦截器配置，res 已经是 data 字段的内容
+    const data = res;
+    Object.assign(formData, {
+      id: data.id,
+      name: data.name,
+      gender: data.gender,
+      phone: data.phone,
+      birthday: data.birthday ? dayjs(data.birthday) : null,
+      avatar: data.avatar,
+      age: data.age,
+      height: data.height,
+      weight: data.weight,
+      education: data.education,
+      marital_status: data.marital_status,
+      address: data.address,
+      family_description: data.family_description,
+      income: data.income,
+      profession: data.profession,
+      work_city: data.work_city,
+      house_status: data.house_status,
+      car_status: data.car_status,
+      tags: data.tags || [],
+      partner_requirements: data.partner_requirements || {},
+      parents_profession: data.parents_profession,
+      remark: data.remark,
+      photos: data.photos || [],
+    });
   } finally {
     loading.value = false;
   }
@@ -125,14 +126,10 @@ async function handleSave() {
     saving.value = true;
 
     const api = isEdit.value ? updateClient : createClient;
-    const res = await api(formData);
+    await api(formData);
 
-    if (res.data.code === 0) {
-      message.success(isEdit.value ? '更新成功' : '创建成功');
-      router.push('/client/list');
-    } else {
-      message.error(res.data.message || '保存失败');
-    }
+    message.success(isEdit.value ? '更新成功' : '创建成功');
+    router.push('/client/list');
   } catch (error) {
     message.error('请检查表单填写是否正确');
   } finally {

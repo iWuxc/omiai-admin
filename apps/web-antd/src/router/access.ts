@@ -20,12 +20,6 @@ async function generateAccess(options: GenerateMenuAndRoutesOptions) {
     IFrameView,
   };
 
-  // 显示加载提示
-  message.loading({
-    content: `${$t('common.loadingMenu')}...`,
-    duration: 500,
-  });
-
   // 使用前端模式生成菜单（不使用后端接口）
   return await generateAccessible('frontend', {
     ...options,

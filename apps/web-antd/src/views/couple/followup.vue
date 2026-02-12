@@ -24,10 +24,10 @@ const queryParams = ref({
 async function fetchList() {
   loading.value = true;
   try {
-    // 这里应该调用获取所有跟进记录的接口
-    // 由于没有单独的接口，暂时使用空数据
-    followUpList.value = [];
-    total.value = 0;
+    const res = await getFollowUpList(0); // 0表示获取所有跟进记录
+    // 由于拦截器配置，res 已经是 data 字段的内容
+    followUpList.value = res?.list || [];
+    total.value = res?.total || 0;
   } catch (error) {
     message.error('获取列表失败');
   } finally {

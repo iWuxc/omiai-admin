@@ -34,40 +34,57 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       loginLoading.value = true;
       const { accessToken } = await loginApi(params);
+      console.log('登录成功，获取到 accessToken:', accessToken);
 
       // 如果成功获取到 accessToken
       if (accessToken) {
         accessStore.setAccessToken(accessToken);
 
         // 获取用户信息并存储到 accessStore 中
-        const [fetchUserInfoResult, accessCodes] = await Promise.all([
-          fetchUserInfo(),
-          getAccessCodesApi(),
-        ]);
+        try {
+          const [fetchUserInfoResult, accessCodes] = await Promise.all([
+            fetchUserInfo(),
+            getAccessCodesApi(),
+          ]);
 
-        userInfo = fetchUserInfoResult;
+          userInfo = fetchUserInfoResult;
 
-        userStore.setUserInfo(userInfo);
-        accessStore.setAccessCodes(accessCodes);
+          userStore.setUserInfo(userInfo);
+          accessStore.setAccessCodes(accessCodes);
 
-        if (accessStore.loginExpired) {
-          accessStore.setLoginExpired(false);
-        } else {
-          onSuccess
-            ? await onSuccess?.()
-            : await router.push(
-                userInfo.homePath || preferences.app.defaultHomePath,
-              );
-        }
+          console.log('获取用户信息成功:', userInfo);
+          console.log('获取权限码成功:', accessCodes);
 
-        if (userInfo?.realName) {
-          notification.success({
-            description: `${$t('authentication.loginSuccessDesc')}:${userInfo?.realName}`,
+          if (accessStore.loginExpired) {
+            accessStore.setLoginExpired(false);
+          } else {
+            onSuccess
+              ? await onSuccess?.()
+              : await router.push(
+                  userInfo.homePath || preferences.app.defaultHomePath,
+                );
+          }
+
+          if (userInfo?.realName) {
+            notification.success({
+              description: `${$t('authentication.loginSuccessDesc')}:${userInfo?.realName}`,
+              duration: 3,
+              message: $t('authentication.loginSuccess'),
+            });
+          }
+        } catch (error) {
+          console.error('获取用户信息或权限码失败:', error);
+          notification.error({
+            description: '获取用户信息失败，请稍后重试',
             duration: 3,
-            message: $t('authentication.loginSuccess'),
+            message: '登录失败',
           });
+          throw error;
         }
       }
+    } catch (error) {
+      console.error('登录失败:', error);
+      throw error;
     } finally {
       loginLoading.value = false;
     }

@@ -77,6 +77,7 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
       codeField: 'code',
       dataField: 'data',
       successCode: 0,
+      isTransformResponseResult: false,
     }),
   );
 

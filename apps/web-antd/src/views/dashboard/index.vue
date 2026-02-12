@@ -45,9 +45,8 @@ async function fetchStats() {
   loadingStats.value = true;
   try {
     const res = await getDashboardStats();
-    if (res.data.code === 0) {
-      stats.value = res.data.data;
-    }
+    // 由于拦截器配置，res 已经是 data 字段的内容
+    stats.value = res;
   } finally {
     loadingStats.value = false;
   }
@@ -58,9 +57,8 @@ async function fetchTodos() {
   loadingTodos.value = true;
   try {
     const res = await getTodoList();
-    if (res.data.code === 0) {
-      todos.value = res.data.data;
-    }
+    // 由于拦截器配置，res 已经是 data 字段的内容
+    todos.value = Array.isArray(res) ? res : [];
   } finally {
     loadingTodos.value = false;
   }
@@ -74,12 +72,9 @@ async function fetchTrends() {
       getClientTrend(30),
       getMatchTrend(30),
     ]);
-    if (clientRes.data.code === 0) {
-      clientTrend.value = clientRes.data.data;
-    }
-    if (matchRes.data.code === 0) {
-      matchTrend.value = matchRes.data.data;
-    }
+    // 由于拦截器配置，res 已经是 data 字段的内容
+    clientTrend.value = clientRes;
+    matchTrend.value = matchRes;
   } finally {
     loadingCharts.value = false;
   }

@@ -52,9 +52,8 @@ const queryParams = ref<ReminderListParams>({
 async function fetchStats() {
   try {
     const res = await getReminderStats();
-    if (res.data.code === 0) {
-      stats.value = res.data.data;
-    }
+    // 由于拦截器配置，res 已经是 data 字段的内容
+    stats.value = res;
   } catch (error) {
     console.error('获取统计失败', error);
   }
@@ -65,12 +64,9 @@ async function fetchList() {
   loading.value = true;
   try {
     const res = await getReminderList(queryParams.value);
-    if (res.data.code === 0) {
-      reminderList.value = res.data.data.list;
-      total.value = res.data.data.total;
-    } else {
-      message.error(res.data.message || '获取列表失败');
-    }
+    // 由于拦截器配置，res 已经是 data 字段的内容
+    reminderList.value = res?.list || [];
+    total.value = res?.total || 0;
   } catch (error) {
     message.error('获取列表失败');
   } finally {
@@ -106,12 +102,10 @@ function handlePageChange(page: number, pageSize: number) {
 // 标记完成
 async function handleMarkAsDone(row: Reminder) {
   try {
-    const res = await markReminderAsDone(row.id);
-    if (res.data.code === 0) {
-      message.success('标记成功');
-      fetchList();
-      fetchStats();
-    }
+    await markReminderAsDone(row.id);
+    message.success('标记成功');
+    fetchList();
+    fetchStats();
   } catch (error) {
     message.error('操作失败');
   }
@@ -120,12 +114,10 @@ async function handleMarkAsDone(row: Reminder) {
 // 删除
 async function handleDelete(row: Reminder) {
   try {
-    const res = await deleteReminder(row.id);
-    if (res.data.code === 0) {
-      message.success('删除成功');
-      fetchList();
-      fetchStats();
-    }
+    await deleteReminder(row.id);
+    message.success('删除成功');
+    fetchList();
+    fetchStats();
   } catch (error) {
     message.error('删除失败');
   }

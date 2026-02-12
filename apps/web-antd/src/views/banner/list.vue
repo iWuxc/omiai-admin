@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 import {
   DeleteOutlined,
@@ -22,6 +23,8 @@ import { deleteBanner, getBannerList, updateBanner } from '#/api/omiai';
 import { BannerStatus } from '#/constants/omiai';
 import type { Banner } from '#/types/omiai';
 
+const router = useRouter();
+
 // Banner 列表
 const bannerList = ref<Banner[]>([]);
 const loading = ref(false);
@@ -31,11 +34,8 @@ async function fetchList() {
   loading.value = true;
   try {
     const res = await getBannerList();
-    if (res.data.code === 0) {
-      bannerList.value = res.data.data;
-    } else {
-      message.error(res.data.message || '获取列表失败');
-    }
+    // 由于拦截器配置，res 已经是 data 字段的内容
+    bannerList.value = res?.list || [];
   } catch (error) {
     message.error('获取列表失败');
   } finally {
@@ -46,16 +46,12 @@ async function fetchList() {
 // 更新状态
 async function handleStatusChange(banner: Banner, checked: boolean) {
   try {
-    const res = await updateBanner({
+    await updateBanner({
       ...banner,
       status: checked ? BannerStatus.Enabled : BannerStatus.Disabled,
     });
-    if (res.data.code === 0) {
-      message.success('更新成功');
-      fetchList();
-    } else {
-      message.error(res.data.message || '更新失败');
-    }
+    message.success('更新成功');
+    fetchList();
   } catch (error) {
     message.error('更新失败');
   }
@@ -70,13 +66,9 @@ async function handleDelete(banner: Banner) {
     cancelText: '取消',
     async onOk() {
       try {
-        const res = await deleteBanner(banner.id);
-        if (res.data.code === 0) {
-          message.success('删除成功');
-          fetchList();
-        } else {
-          message.error(res.data.message || '删除失败');
-        }
+        await deleteBanner(banner.id);
+        message.success('删除成功');
+        fetchList();
       } catch (error) {
         message.error('删除失败');
       }
@@ -86,12 +78,12 @@ async function handleDelete(banner: Banner) {
 
 // 新增
 function handleCreate() {
-  message.info('新增功能开发中...');
+  router.push('/banner/create');
 }
 
 // 编辑
 function handleEdit(banner: Banner) {
-  message.info('编辑功能开发中...');
+  router.push(`/banner/edit/${banner.id}`);
 }
 
 onMounted(() => {

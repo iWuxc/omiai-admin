@@ -39,11 +39,8 @@ async function fetchClientDetail() {
   loading.value = true;
   try {
     const res = await getClientDetail(clientId);
-    if (res.data.code === 0) {
-      client.value = res.data.data;
-    } else {
-      message.error(res.data.message || '获取详情失败');
-    }
+    // 由于拦截器配置，res 已经是 data 字段的内容
+    client.value = res;
   } catch (error) {
     message.error('获取详情失败');
   } finally {
@@ -56,9 +53,8 @@ async function fetchCandidates() {
   candidatesLoading.value = true;
   try {
     const res = await getCandidates(clientId);
-    if (res.data.code === 0) {
-      candidates.value = res.data.data;
-    }
+    // 由于拦截器配置，res 已经是 data 字段的内容
+    candidates.value = Array.isArray(res) ? res : [];
   } catch (error) {
     message.error('获取候选人失败');
   } finally {
