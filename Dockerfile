@@ -13,7 +13,8 @@ RUN apt-get update && apt-get install -y \
     g++ \
     && rm -rf /var/lib/apt/lists/*
 
-RUN npm i -g corepack
+# Install specific pnpm version
+RUN npm install -g pnpm@10.28.2
 
 WORKDIR /app
 
@@ -23,8 +24,8 @@ COPY . .
 # Install dependencies
 RUN pnpm install --frozen-lockfile
 
-# Build the application (exclude docs)
-RUN pnpm run build --filter=\!./docs
+# Build the application
+RUN pnpm run build:antd
 
 RUN echo "Builder Success 🎉"
 
