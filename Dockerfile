@@ -6,25 +6,25 @@ ENV PATH="$PNPM_HOME:$PATH"
 ENV NODE_OPTIONS=--max-old-space-size=8192
 ENV TZ=Asia/Shanghai
 
+# Install build dependencies
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN npm i -g corepack
 
 WORKDIR /app
 
-# Copy root package files
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY .npmrc* ./
+# Copy all source code
+COPY . .
 
-# Copy source code
-COPY packages ./packages
-COPY apps ./apps
-COPY internal ./internal
-COPY scripts ./scripts
+# Install dependencies
+RUN pnpm install --frozen-lockfile
 
-# Install dependencies with cache
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-
-# Build the application
-RUN pnpm run build:antd
+# Build the application (exclude docs)
+RUN pnpm run build --filter=\!./docs
 
 RUN echo "Builder Success 🎉"
 
