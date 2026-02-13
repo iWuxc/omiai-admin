@@ -36,8 +36,9 @@ FROM nginx:stable-alpine AS production
 RUN echo "types { application/javascript js mjs; }" > /etc/nginx/conf.d/mjs.conf \
     && rm -rf /etc/nginx/conf.d/default.conf
 
-# Copy build artifacts
-COPY --from=builder /app/apps/web-antd/dist /usr/share/nginx/html
+# Create web directory and copy build artifacts
+RUN mkdir -p /usr/share/nginx/html/web
+COPY --from=builder /app/apps/web-antd/dist /usr/share/nginx/html/web
 
 # Copy nginx config
 COPY apps/web-antd/nginx.conf /etc/nginx/conf.d/default.conf
