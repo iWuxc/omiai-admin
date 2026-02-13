@@ -1,3 +1,7 @@
+import type { UserInfo } from '@vben/types';
+
+import { baseRequestClient, requestClient } from '#/api/request';
+
 export namespace AuthApi {
   /** 登录接口参数 */
   export interface LoginParams {

@@ -48,7 +48,7 @@ function buildParams(params: Record<string, unknown>): string {
     }
   });
   const queryString = searchParams.toString();
-  return queryString ? `?\${queryString}` : '';
+  return queryString ? `?${queryString}` : '';
 }
 
 // ==================== 认证模块 API ====================
@@ -57,7 +57,7 @@ function buildParams(params: Record<string, unknown>): string {
  * 发送短信验证码
  */
 export function sendSms(phone: string) {
-  return requestClient.post<null>>('/auth/send_sms', { phone });
+  return requestClient.post<null>('/auth/send_sms', { phone });
 }
 
 /**
@@ -121,7 +121,7 @@ export function getUserInfo() {
  * 修改密码
  */
 export function changePassword(oldPassword: string, newPassword: string) {
-  return requestClient.post<null>>('/user/change_password', {
+  return requestClient.post<null>('/user/change_password', {
     old_password: oldPassword,
     new_password: newPassword,
   });
@@ -500,4 +500,3 @@ export function uploadFile(file: File) {
     },
   );
 }
-
